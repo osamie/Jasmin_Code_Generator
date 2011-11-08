@@ -1,0 +1,89 @@
+
+// return true if a is greater than b
+boolean gt(number a, number b) {
+  return a > b;
+}
+
+// count from 0 to n-1, printing the counter
+number count(number n) {
+  number i;
+  i = 0;
+  while (i < n) {
+    println(i^2);
+    i = i + 1;
+  }
+  return i;
+}
+
+number numtester(number x, number y) {
+  println(x);
+  println(y);
+  println(x+y);
+  println(x-y);
+  println(x*y);
+  println(x/y);
+  println(x^y);
+  println(x%y);
+  return x;
+}
+
+boolean booltester(boolean x, boolean y) {
+  println(x);
+  println(y);
+  println(x&y);
+  println(x|y);
+  return x;
+}
+
+boolean nottest(boolean v) {
+  println(v);
+  // println(!v);  // generates error - not yet implemented
+  return v;
+}
+
+boolean inittest() {
+  number x;
+  // println(x);  // generates an error - unitialized register
+  return false;
+}
+
+// do some stupid things
+number main() {
+  //println(numtester(2,3));
+  //println(booltester(true, false));
+  //count(10);
+  //string x;
+  //string l;
+  //x = "bla aweoooo";
+  //l = "shak ahsa kjas";
+  
+  //number k;
+  //k = 0;
+  
+  if(!false){
+  
+  	println("should not show");
+  	boolean y;
+  	y = false;
+  	
+  	boolean k;
+  	k = false;
+  	
+  	number a; 
+  	a = 1;
+  	
+  	number b;
+  	b = 3;
+  	
+  	boolean w;
+  	w = y^k;
+  	//y=3;
+  	println(true^true);
+  }
+  
+  
+
+  //println(concat(x,concat("love","you")));
+  return 0;
+}
+
