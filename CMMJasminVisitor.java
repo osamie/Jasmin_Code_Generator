@@ -427,12 +427,13 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 			String label2 = getLabel();
 			output.add("  fcmpl");
 			//if 
-			output.add("  if" + op + " " + label1);
+			/**output.add("  if" + op + " " + label1);
 			output.add("  ldc 0");
 			output.add("  goto " + label2);
 			output.add(label1 + ":");
 			output.add("  ldc 1");
 			output.add(label2 + ":");
+			**/
 		}
 		return BOOLEAN;
 	}
@@ -841,9 +842,23 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 	public Integer visit(CMMASTWhileLoopNode node, List<String> output) {
 		String labelTop = getLabel();
 		String labelBottom = getLabel();
+		
+		String op = node.getChild(1).getChild(1).getChild(0).getChild(1).getName();
+		String NEWop = op;
+		//lt|gt|eq|le|ge|ne
+		if (op == "lt") NEWop = "ge";
+		else if (op == "ge") NEWop = "lt";
+		else if (op == "eq") NEWop = "ne";
+		else if (op == "le") NEWop = "gt";
+		else if (op == "ne") NEWop = "eq";
+		else if (op == "gt") NEWop = "le";
+		
+		else throw new RuntimeException("Unpredicted error: Runtime exception thrown to prevent wrong implementation." + op);
+		
 		output.add(labelTop + ":");
 		node.getChild(1).accept(this, output);
-		output.add("  ifeq " + labelBottom);
+		output.add("  if" + NEWop + " " + labelBottom);//if{NEWop} label3(labelbottom)
+		
 		node.getChild(2).accept(this, output);
 		output.add("  goto " + labelTop);
 		output.add(labelBottom + ":");

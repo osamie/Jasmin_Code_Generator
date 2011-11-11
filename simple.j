@@ -13,20 +13,213 @@
 .end method
 ; End standard header
 
+.method public static gt(FF)I
+.limit stack 50
+.limit locals 50
+  fload 0   ;a
+  fload 1   ;b
+  fcmpl
+  ireturn
+.end method
+
+.method public static count(F)F
+.limit stack 50
+.limit locals 50
+ ldc 0.0
+  fstore 1   ; i
+  ldc 0.0
+  fstore 1   ; i
+label2:
+  fload 1   ;i
+  fload 0   ;n
+  fcmpl
+  ifge label3
+  fload 1   ;i
+  ldc 2.0
+  invokestatic simple/pow(FF)F
+  invokestatic simple/println(F)F
+pop
+  fload 1   ;i
+  ldc 1.0
+  fadd
+  fstore 1   ; i
+  goto label2
+label3:
+  fload 1   ;i
+  freturn
+.end method
+
+.method public static numtester(FF)F
+.limit stack 50
+.limit locals 50
+  fload 0   ;x
+  invokestatic simple/println(F)F
+pop
+  fload 1   ;y
+  invokestatic simple/println(F)F
+pop
+  fload 0   ;x
+  fload 1   ;y
+  fadd
+  invokestatic simple/println(F)F
+pop
+  fload 0   ;x
+  fload 1   ;y
+  fsub
+  invokestatic simple/println(F)F
+pop
+  fload 0   ;x
+  fload 1   ;y
+  fmul
+  invokestatic simple/println(F)F
+pop
+  fload 0   ;x
+  fload 1   ;y
+  fdiv
+  invokestatic simple/println(F)F
+pop
+  fload 0   ;x
+  fload 1   ;y
+  invokestatic simple/pow(FF)F
+  invokestatic simple/println(F)F
+pop
+  fload 0   ;x
+  fload 1   ;y
+  frem
+  invokestatic simple/println(F)F
+pop
+  fload 0   ;x
+  freturn
+.end method
+
+.method public static booltester(II)I
+.limit stack 50
+.limit locals 50
+  iload 0   ;x
+  invokestatic simple/println(I)I
+pop
+  iload 1   ;y
+  invokestatic simple/println(I)I
+pop
+  iload 0   ;x
+  iload 1   ;y
+  iand
+  invokestatic simple/println(I)I
+pop
+  iload 0   ;x
+  iload 1   ;y
+  ior
+  invokestatic simple/println(I)I
+pop
+  iload 0   ;x
+  ireturn
+.end method
+
+.method public static nottest(I)I
+.limit stack 50
+.limit locals 50
+  iload 0   ;v
+  invokestatic simple/println(I)I
+pop
+  iload 0   ;v
+  ireturn
+.end method
+
+.method public static inittest()I
+.limit stack 50
+.limit locals 50
+ ldc 0.0
+  fstore 0   ; x
+  ldc 0
+  ireturn
+.end method
+
 .method public static main()F
 .limit stack 50
 .limit locals 50
+ ldc 0.0
+  fstore 0   ; i
+ ldc 0.0
+  fstore 1   ; k
+  ldc 1.0
+  fstore 0   ; i
+  ldc 10.0
+  fstore 1   ; k
+ ldc "  " 
+  astore 2   ; w
  ldc 0
-  istore 0   ; x
-  ldc 1
-  dup
-  istore 0   ; x
-ifeq label1
-label0 : 
-  ldc "b"
+  istore 3   ; f
+  iload 3   ;f
+ ifeq label14
+ ldc 0
+ goto label15
+label14:
+ ldc 1
+ goto label15
+label15:
+ ifeq label12
+ ldc 0
+ goto label13
+label12:
+ ldc 1
+ goto label13
+label13:
+ ifeq label10
+ ldc 0
+ goto label11
+label10:
+ ldc 1
+ goto label11
+label11:
+ifeq label9
+label8 : 
+  ldc "startttinnng!!"
   invokestatic simple/println(Ljava/lang/String;)Ljava/lang/String;
 pop
-label1:
+label9:
+  fload 0   ;i
+  ldc 1.0
+  fadd
+  fstore 0   ; i
+label6:
+  iload 3   ;f
+ ifeq label22
+ ldc 0
+ goto label23
+label22:
+ ldc 1
+ goto label23
+label23:
+ ifeq label20
+ ldc 0
+ goto label21
+label20:
+ ldc 1
+ goto label21
+label21:
+ ifeq label18
+ ldc 0
+ goto label19
+label18:
+ ldc 1
+ goto label19
+label19:
+ifeq label17
+label16 : 
+  ldc "startttinnng!!"
+  invokestatic simple/println(Ljava/lang/String;)Ljava/lang/String;
+pop
+label17:
+  fload 0   ;i
+  ldc 1.0
+  fadd
+  fstore 0   ; i
+  fload 0   ;i
+  ldc 16.0
+  fcmpl
+ ifeq label7
+ goto label6
+label7:
   ldc 0.0
   freturn
 .end method
