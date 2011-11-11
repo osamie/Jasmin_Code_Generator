@@ -426,6 +426,7 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 			String label1 = getLabel();
 			String label2 = getLabel();
 			output.add("  fcmpl");
+			//if 
 			output.add("  if" + op + " " + label1);
 			output.add("  ldc 0");
 			output.add("  goto " + label2);
@@ -522,6 +523,8 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 		//output.add("  invokevirtual java/lang/concat(Ljava/lang/String;)Ljava/lang/String;");
 		return ret;
 	}
+	
+	String c = 1 + 1 + " ";
 	// Sum -> Term ((plus|minus) Term)*  [>1]
 	public Integer visit(CMMASTSumNode node, List<String> output) {
 		//Integer op1 = node.getChild(0).accept(this, output);
@@ -536,9 +539,9 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 		for (int i = 1; i < node.numChildren(); i += 2) {
 			
 			String op = node.getChild(i).getName();
-			String opr =node.getChild(0).getChild(0).getChild(0).getName() ;
-			String op1 =node.getChild(i-1).getChild(0).getChild(0).getName() ;
-			String op2 =node.getChild(i+1).getChild(0).getChild(0).getName() ;
+			//String opr =node.getChild(0).getChild(0).getChild(0).getName() ;
+			//String op1 =node.getChild(i-1).getChild(0).getChild(0).getName() ;
+			//String op2 =node.getChild(i+1).getChild(0).getChild(0).getName() ;
 			
 			int o2 = node.getChild(i+1).accept(this,tempOut);
 			
@@ -781,6 +784,12 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 	}
 	
 	public Integer visit(CMMASTSimpleStatementNode node, List<String> output) {
+		 //visitChildren(node, output);
+		/**if (visitChildren(node, output) == null){
+			
+			
+			return null;
+		}**/
 		return visitChildren(node, output);
 	}
 
@@ -882,7 +891,6 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 		return null;
 	}
 
-
 	public Integer visit(CMMASTAssignmentNode node, List<String> output) {
 		if (node.numChildren() == 1) {  // not really an assignment
 			return visitChildren(node, output);
@@ -901,15 +909,29 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 			if (data == null)
 				throw new RuntimeException("Assigning to undeclared variable " + id);
 			node.getChild(2).accept(this, output);
-			output.add("  dup");
+			if (!(node.getParent().getName().equals("SimpleStatement"))){
+				//throw new RuntimeException("found redun!");
+				output.add("  dup");
+				output.add("  " + t2a[data.type] + "store " + data.location + "   ; " + id);
+				return data.type;
+			}
 			output.add("  " + t2a[data.type] + "store " + data.location + "   ; " + id);
-			return data.type;
+			return null;
+				
+			
 		}
+		
 	}
 
 	public Integer visit(CMMASTStatementNode node, List<String> output) {
-		if (visitChildren(node, output) != null)
-			output.add("  pop");
+		if (visitChildren(node, output) != null){
+			//if (node.getChild(0).getChild(0).getValue() != null){
+				output.add(  "pop");
+			//}
+			//output.add("  pop");
+			
+		}
+			
 		return null;
 	}
 
