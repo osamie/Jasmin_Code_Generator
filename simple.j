@@ -163,9 +163,6 @@ label8:
 label9:
 ifeq label7
 label6 : 
-  ldc "should not show"
-  invokestatic simple/println(Ljava/lang/String;)Ljava/lang/String;
-  pop
  ldc 0
   istore 0   ; y
   ldc 0
@@ -186,22 +183,36 @@ label6 :
   pop
  ldc 0.0
   fstore 3   ; b
-  ldc 3.0
+ ldc "  " 
+  astore 4   ; w
+  ldc "love "
   dup
-  fstore 3   ; b
+  astore 4   ; w
   pop
- ldc 0
-  istore 4   ; w
-  iload 0   ;y
-  iload 1   ;k
- ixor
-  dup
-  istore 4   ; w
-  pop
+ ldc "  " 
+  astore 5   ; z
+  ldc 9.0
+  ldc "hettt"
+  astore 3
+  invokestatic java/lang/Float/toString(F)Ljava/lang/String;
+  aload 3
+  invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String;
   ldc 1
+  invokestatic simple/concat(Ljava/lang/String;I)Ljava/lang/String;
+  invokestatic simple/inittest()I
+  invokestatic simple/concat(Ljava/lang/String;I)Ljava/lang/String;
+  ldc 0
+  invokestatic simple/concat(Ljava/lang/String;I)Ljava/lang/String;
+  ldc "hate "
+  invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String;
   ldc 1
- ixor
-  invokestatic simple/println(F)F
+  invokestatic simple/concat(Ljava/lang/String;I)Ljava/lang/String;
+  ldc 1
+  invokestatic simple/concat(Ljava/lang/String;I)Ljava/lang/String;
+  ldc 1.0
+  invokestatic java/lang/Float/toString(F)Ljava/lang/String;
+  invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String;
+  invokestatic simple/println(Ljava/lang/String;)Ljava/lang/String;
   pop
 label7:
   ldc 0.0
@@ -320,6 +331,51 @@ print_it:
 	dup
 	invokespecial java/lang/StringBuffer/<init>()V
 	aload 0
+	invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;
+	aload 1
+	invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;
+	invokevirtual java/lang/StringBuffer/toString()Ljava/lang/String;
+	areturn
+
+.end method
+.method public static concat(Ljava/lang/String;I)Ljava/lang/String;
+	.limit stack 20
+	.limit locals 20
+	new java/lang/StringBuffer
+	dup
+	invokespecial java/lang/StringBuffer/<init>()V
+	aload 0
+	invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;
+	iload 1
+   ifeq retFalse
+	;pop 
+	ldc "true "
+	goto end
+	retFalse:
+	;pop
+	ldc "false "
+	end:
+	invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;
+	invokevirtual java/lang/StringBuffer/toString()Ljava/lang/String;
+	areturn
+
+.end method
+.method public static concat(ILjava/lang/String;)Ljava/lang/String;
+	.limit stack 20
+	.limit locals 20
+	new java/lang/StringBuffer
+	dup
+	invokespecial java/lang/StringBuffer/<init>()V
+	iload 0
+	
+   ifeq retFalse
+	;pop 
+	ldc "true "
+	goto end
+	retFalse:
+	;pop
+	ldc "false "
+	end:
 	invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;
 	aload 1
 	invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;

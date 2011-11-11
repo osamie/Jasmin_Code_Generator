@@ -62,7 +62,7 @@ number main() {
   
   if(!false){
   
-  	println("should not show");
+  	//println("should not show");
   	boolean y;
   	y = false;
   	
@@ -73,12 +73,22 @@ number main() {
   	a = 1;
   	
   	number b;
-  	b = 3;
   	
-  	boolean w;
-  	w = y^k;
+  	//b = 9 - 3 + 4;
+  	
+  	string w;
+  	w = "love ";
+  	
+  	string z;
+  	
+  	//z = "love" + 1;
   	//y=3;
-  	println(true^true);
+  	//println(9-3);
+  	//println(" heyyyyy" + "heyyyyyyyyyy");
+  	//println(0 + "skjbsakbc" );
+  	println(9 + "hettt" + true+ inittest() + false + "hate " + true + true + 1);
+  	//println(1-0);
+  	//println(count(10));
   }
   
   

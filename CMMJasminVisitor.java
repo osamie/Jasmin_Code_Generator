@@ -17,7 +17,7 @@ import java.util.Stack;
  * and returns the type (BOOLEAN/NUMBER/STRING) of the value that the Jasmin
  * code leaves on the JVM stack.  If the code does not leave any value on the stack,
  * then NULL is returned.
- * @author morin
+ * 
  *
  */
 public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
@@ -169,6 +169,69 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 		"	areturn",
 		"",
 		".end method",
+		".method public static concat(Ljava/lang/String;I)Ljava/lang/String;",
+		"	.limit stack 20",
+		"	.limit locals 20",
+		"	new java/lang/StringBuffer",
+		"	dup",
+		"	invokespecial java/lang/StringBuffer/<init>()V",
+		"	aload 0",
+		"	invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;",
+		"	iload 1",
+		"   ifeq retFalse",
+		"	;pop ",
+		"	ldc \"true \"",
+		"	goto end",
+		"	retFalse:",
+		"	;pop",
+		"	ldc \"false \"",
+		"	end:",
+		"	invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;",
+		"	invokevirtual java/lang/StringBuffer/toString()Ljava/lang/String;",
+		"	areturn",
+		"",
+		".end method",
+		".method public static concat(ILjava/lang/String;)Ljava/lang/String;",
+		"	.limit stack 20",
+		"	.limit locals 20",
+		"	new java/lang/StringBuffer",
+		"	dup",
+		"	invokespecial java/lang/StringBuffer/<init>()V",
+		"	iload 0",
+		"	",
+		"   ifeq retFalse",
+		"	;pop ",
+		"	ldc \"true \"",
+		"	goto end",
+		"	retFalse:",
+		"	;pop",
+		"	ldc \"false \"",
+		"	end:",
+		"	invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;",
+		"	aload 1",	
+		"	invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;",
+		"	invokevirtual java/lang/StringBuffer/toString()Ljava/lang/String;",
+		"	areturn",
+		
+		
+		/**
+		"	aload 1",	
+		"	invokevirtual java/lang/StringBuffer/append(Ljava/lang/String;)Ljava/lang/StringBuffer;",
+		"	iload 0",
+		"   ifeq retFalse",
+		"	;pop ",
+		"	ldc \"true \"",
+		"	goto end",
+		"	retFalse:",
+		"	;pop",
+		"	ldc \"false \"",
+		"	end:",
+		"	invokevirtual java/lang/StringBuffer/append(I)Ljava/lang/StringBuffer;",
+		"	invokevirtual java/lang/StringBuffer/toString()Ljava/lang/String;",
+		**/
+		
+		"",
+		".end method",
 		"; End of standard trailer"	};
 
 	protected class Data {
@@ -270,6 +333,8 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 		frames.peek().addFunction("cos(F)","cos(F)F", NUMBER);
 		frames.peek().addFunction("sin(F)","sin(F)F", NUMBER);
 		frames.peek().addFunction("concat(Ljava/lang/String;Ljava/lang/String;)","concat(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", STRING);
+		frames.peek().addFunction("concat(Ljava/lang/String;I)","concat(Ljava/lang/String;I)Ljava/lang/String;", STRING);
+		frames.peek().addFunction("concat(ILjava/lang/String;)","concat(ILjava/lang/String;)Ljava/lang/String;", STRING);
 	}
 
 	/**
@@ -371,22 +436,275 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 		return BOOLEAN;
 	}
 
-	// Sum -> Term ((plus|minus) Term)*  [>1]
-	public Integer visit(CMMASTSumNode node, List<String> output) {
+	
+	public Integer visitTEST(CMMASTSumNode node, List<String> output)
+	{
+		
 		node.getChild(0).accept(this, output);
+		
+		int ret = NUMBER;
 		for (int i = 1; i < node.numChildren(); i += 2) {
-			node.getChild(i+1).accept(this, output);
+			
+			
+			
 			String op = node.getChild(i).getName();
 			if (op.equals("plus")) {
-				output.add("  fadd");
-			} else if (op.equals("minus")) {
-				output.add("  fsub");
-			} else {
+				
+				
+
+				String sType1 = node.getChild(i-1).getChild(0).getChild(0).getName();
+				String sType2 = node.getChild(i+1).getChild(0).getChild(0).getName();
+				
+				
+				
+				int op1type = s2t(sType1); //t2A
+				int op2type = s2t(sType2);
+				
+				if (op1type == NUMBER) throw new RuntimeException("helloo??");
+				
+				
+				if((op1type == 2) || (op2type == 2)){
+					ret = STRING;
+				//B N S F
+				switch (op1type){
+					case 0: //boolean value
+						String op1val = node.getChild(0).getChild(0).getChild(0).getValue();
+						output.add("  pop");
+						output.add("  ldc " + ((op1val == "true")? 1:0) );
+						break;
+						
+					case 1: //number like a float
+						output.add("  invokestatic java/lang/Float/toString(F)Ljava/lang/String");
+						break;
+					
+					case 2: // string
+						break;
+						
+					default: break;
+						
+					
+				}
+				
+				switch (op2type){
+				case 0: //boolean value
+					//node.getChild(i+1).accept(this, output);
+					String op2val = node.getChild(0).getChild(0).getChild(0).getValue();
+					//output.add("  pop");
+					output.add("  ldc " + ((op2val == "true")? 1:0) );
+					break;
+					
+				case 1: //number like a float
+					node.getChild(i+1).accept(this, output);
+					output.add("  invokestatic java/lang/Float/toString(F)Ljava/lang/String");
+					break;
+				
+				case 2: //string
+					break;
+					
+				default: break;
+				
+				
+				
+				}//end switch2
+				
+				output.add("  invokestatic java/lang/String/concat(Ljava/lang/String)Ljava/lang/String");
+				
+			}// end if any string operands
+			else output.add("  fadd");
+		} else if (op.equals("minus")) {
+			output.add("  fsub");
+		} else {
+			throw new RuntimeException("Unknown operator:" + op);
+		}
+				
+		}
+		
+		//output.add("  invokevirtual java/lang/concat(Ljava/lang/String;)Ljava/lang/String;");
+		return ret;
+	}
+	// Sum -> Term ((plus|minus) Term)*  [>1]
+	public Integer visit(CMMASTSumNode node, List<String> output) {
+		//Integer op1 = node.getChild(0).accept(this, output);
+		List<String> tempOut = new ArrayList<String>();
+		
+		int o1 = node.getChild(0).accept(this, output);
+		//int opr1 = node.getChild(0).accept(this, output);
+		//node.getChild(0).accept(this, output);
+		//int opr1 = s2t() 
+		int ret = NUMBER;
+		int stringConcatFlag = 0;
+		for (int i = 1; i < node.numChildren(); i += 2) {
+			
+			String op = node.getChild(i).getName();
+			String opr =node.getChild(0).getChild(0).getChild(0).getName() ;
+			String op1 =node.getChild(i-1).getChild(0).getChild(0).getName() ;
+			String op2 =node.getChild(i+1).getChild(0).getChild(0).getName() ;
+			
+			int o2 = node.getChild(i+1).accept(this,tempOut);
+			
+			
+			
+			
+			//int opr2 = node.getChild(i+1).accept(this, tempOut);
+			if (op.equals("plus")) {
+				//if ((o2 == STRING)&&(o1 == NUMBER))
+						//throw new RuntimeException("we found lovve");
+				//if ((op1.equals("string"))||(opr.equals("string"))||(op2.equals("string")||(stringConcatFlag == 1)))
+				if((o1==STRING)||(o2 == STRING) || (stringConcatFlag == 1))
+				{
+					ret = STRING;
+					
+					//--if ((op2.equals("number"))&& (op1.equals("string")))
+					if ((o2==NUMBER) && (o1==STRING))	
+					{
+						//--node.getChild(i+1).accept(this, tempOut); //putting op2 on temporary stack 
+						tempOut.add("  invokestatic java/lang/Float/toString(F)Ljava/lang/String;");
+						tempOut.add("  invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String;");
+						//throw new RuntimeException("we found this!");
+					}
+					
+					else if((stringConcatFlag==1)&&(o2==STRING))
+					{
+						tempOut.add("  invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String;");
+					}
+					
+					
+					//if ((op2.equals("boolean"))){
+					else if((o2 == BOOLEAN) && (o1 == STRING)){
+						tempOut.add("  invokestatic " + basename + "/concat(Ljava/lang/String;I)Ljava/lang/String;");//cross check this!
+						
+						
+					}
+					
+					//if ((op2.equals("string"))&&(op1.equals("number"))){
+					else if((o1 == NUMBER)&&(o2==STRING)){
+						//tempOut.add("  invokestatic java/lang/Float/toString(F)Ljava/lang/String;");
+						tempOut.add("  astore 3");
+						tempOut.add("  invokestatic java/lang/Float/toString(F)Ljava/lang/String;");
+						tempOut.add("  aload 3");
+						tempOut.add("  invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String;");
+						
+						
+					}
+					else if((o1 == BOOLEAN)&&(o2==STRING)){
+						tempOut.add("  invokestatic " + basename + "/concat(ILjava/lang/String;)Ljava/lang/String;");//cross check this!
+						
+					}
+					
+					else if ((stringConcatFlag==1)&&(o2!=STRING)){
+						
+						if (o2 == BOOLEAN){
+							tempOut.add("  invokestatic " + basename + "/concat(Ljava/lang/String;I)Ljava/lang/String;");//cross check this!
+							//throw new RuntimeException("CRAP!");
+						}
+						else if (o2 == NUMBER){
+							tempOut.add("  invokestatic java/lang/Float/toString(F)Ljava/lang/String;");
+							
+							tempOut.add("  invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String;");
+						}
+						//throw new RuntimeException("CRAP!");
+					}
+					
+					
+					else if ((o1==STRING)&&(o2==STRING)){
+							tempOut.add("  invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String;");
+						
+					}
+						
+					stringConcatFlag = 1;
+					
+					
+				}//end if string concatenation
+				
+				else {
+					tempOut.add("  fadd");
+					
+				}
+				
+				
+				
+				
+			}// end if plus
+			else if (op.equals("minus")) {
+				//node.getChild(i+1).accept(this, tempOut); //putting op2 on temporary stack
+				tempOut.add("  fsub");
+			} 
+			else {
 				throw new RuntimeException("Unknown operator:" + op);
 			}
-		}
-		return NUMBER;
+			
+			
+			
+		}// end FOR LOOP
+		
+		output.addAll(tempOut);
+		return ret;
 	}
+	
+	/**
+	 //if ((opr1Val.equals("string")) || (opr2Val.equals("string")))
+				/**if((opr1 == STRING) )	
+				{
+					//if opr2 is a string then call static concat
+					
+					ret = STRING;
+					
+					if ((opr2 == STRING))
+					{
+						tempOut.add("  invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String; " );
+					}
+					
+					
+					
+					if((opr2 == BOOLEAN))
+					{
+						tempOut.add("  invokestatic " + basename + "/concat(Ljava/lang/String;I)Ljava/lang/String;");
+						
+					}
+					
+					
+					if((opr2 == NUMBER))
+					{
+						
+						tempOut.add("  invokestatic java/lang/Float/toString(F)Ljava/lang/String;");
+						//output.add("	invokestatic java/lang/Integer/toString()Ljava/lang/String;");
+						tempOut.add("  invokestatic " + basename + "/concat(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+					}
+						
+				 }
+				else if ((opr2 == STRING))
+				{
+					ret = STRING;
+					
+					if((opr1 == BOOLEAN)  ){
+						tempOut.add("  invokestatic " + basename + "/concat(ILjava/lang/String;)Ljava/lang/String;");
+						
+						
+					}
+					
+					if((opr1 == NUMBER) ){
+						tempOut.add("  astore 0");
+						tempOut.add("  invokestatic java/lang/Float/toString(F)Ljava/lang/String;");
+						tempOut.add("  aload 0");
+						tempOut.add("  invokestatic " + basename + "/concat(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+						//throw new RuntimeException("found a number");
+						//return STRING;
+					}
+					
+					
+					if((opr1 == STRING)){
+					//else
+						tempOut.add("  invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String; " );
+						
+					}**/
+					
+					//output.add(tempOut.);
+				//
+				//} 
+				//else {output.add("  fadd");}
+				//output.addAll(tempOut);
+	 
+	
 
 	public Integer visit(CMMASTTermNode node, List<String> output) {
 		node.getChild(0).accept(this, output);
@@ -409,6 +727,7 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 	public Integer visit(CMMASTExpNode node, List<String> output) {
 		int t1 = node.getChild(0).accept(this, output);
 		
+		int ret = NUMBER;
 		
 		 
 		for (int i = 1; i < node.numChildren(); i += 2) {
@@ -420,8 +739,9 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 			if (op.equals("exp")) {
 				if ((t1 == BOOLEAN) && (t2 == BOOLEAN))
 				{
+					output.add("  ixor");
+					ret = BOOLEAN;
 					
-					output.add(" ixor");
 					
 				}
 				else {
@@ -440,7 +760,7 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 			}
 		}
 		//java.lang.Math.
-		return NUMBER;
+		return ret;
 	}
 
 	
