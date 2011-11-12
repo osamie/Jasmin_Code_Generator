@@ -296,6 +296,7 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 		}
 		
 		public void addPseudoVariable(String name, int type) {
+			
 			map.put(name, new Data(name, type, -1));			
 		}
 		
@@ -370,6 +371,8 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 		return sig;
 	}
 	
+	
+	
 	// FunctionDefinition -> Type id ParameterList Block
 	public Integer visit(CMMASTFunctionDefinitionNode node, List<String> output) {
 		String fname = node.getChild(1).getValue();
@@ -387,6 +390,41 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 		frames.peek().addPseudoVariable("22retval", itype);
 		node.getChild(2).accept(this, output);   // parameter list
 		node.getChild(3).accept(this, output);   // block
+		
+		
+		//if block does not contain return statement, then
+		
+		CMMASTNode a = node.getChild(3).getChild(1);
+		/*
+		 * I throw a runtime exception for any empty code block
+		 */
+		if (a.numChildren() == 0) throw new RuntimeException("Empty code block for function: " + "'"+node.getChild(1).getValue()+"'");
+		
+		String n = a.getChild(a.numChildren()-1).getChild(0).getName();
+		
+		//CMMASTNode lastStatement = a.getChild(a.numChildren()-1); //the last statement's child
+		
+		
+		
+		
+		if (!(n.equals("ReturnStatement"))) //set our default return here!
+		{
+			Data r = lookup("22retval");
+			if (r.type == BOOLEAN) {
+				output.add("  ldc 0");
+				//throw new RuntimeException("No boolean return!" + n);
+			}
+			else if (r.type == NUMBER) {
+				output.add("  ldc 0.0");
+				//throw new RuntimeException("No number return!" + n);
+			}
+			else if (r.type == STRING) output.add("  ldc \" \"");
+			
+			output.add("  " + t2a[r.type] + "return");
+			
+		}
+		
+			
 		frames.pop();
 		output.add(".end method");
 		return null;
@@ -645,69 +683,7 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 		return ret;
 	}
 	
-	/**
-	 //if ((opr1Val.equals("string")) || (opr2Val.equals("string")))
-				/**if((opr1 == STRING) )	
-				{
-					//if opr2 is a string then call static concat
-					
-					ret = STRING;
-					
-					if ((opr2 == STRING))
-					{
-						tempOut.add("  invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String; " );
-					}
-					
-					
-					
-					if((opr2 == BOOLEAN))
-					{
-						tempOut.add("  invokestatic " + basename + "/concat(Ljava/lang/String;I)Ljava/lang/String;");
-						
-					}
-					
-					
-					if((opr2 == NUMBER))
-					{
-						
-						tempOut.add("  invokestatic java/lang/Float/toString(F)Ljava/lang/String;");
-						//output.add("	invokestatic java/lang/Integer/toString()Ljava/lang/String;");
-						tempOut.add("  invokestatic " + basename + "/concat(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
-					}
-						
-				 }
-				else if ((opr2 == STRING))
-				{
-					ret = STRING;
-					
-					if((opr1 == BOOLEAN)  ){
-						tempOut.add("  invokestatic " + basename + "/concat(ILjava/lang/String;)Ljava/lang/String;");
-						
-						
-					}
-					
-					if((opr1 == NUMBER) ){
-						tempOut.add("  astore 0");
-						tempOut.add("  invokestatic java/lang/Float/toString(F)Ljava/lang/String;");
-						tempOut.add("  aload 0");
-						tempOut.add("  invokestatic " + basename + "/concat(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
-						//throw new RuntimeException("found a number");
-						//return STRING;
-					}
-					
-					
-					if((opr1 == STRING)){
-					//else
-						tempOut.add("  invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String; " );
-						
-					}**/
-					
-					//output.add(tempOut.);
-				//
-				//} 
-				//else {output.add("  fadd");}
-				//output.addAll(tempOut);
-	 
+	
 	
 
 	public Integer visit(CMMASTTermNode node, List<String> output) {
@@ -900,8 +876,19 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 	}
 
 	public Integer visit(CMMASTReturnStatementNode node, List<String> output) {
+		//List <String> temp = new ArrayList<String> ();
+		//Integer retVal ...
 		node.getChild(1).accept(this, output);
 		Data r = lookup("22retval");
+		
+		/**if (retV == null)
+		{
+			throw new RuntimeException("empty return!");
+			/**if (r.type == BOOLEAN) output.add("  ldc 0");
+			else if (r.type == NUMBER) output.add("  ldc 0.0");
+			else if (r.type == STRING) output.add("  ldc \" \"");
+			
+		}**/
 		output.add("  " + t2a[r.type] + "return");
 		return null;
 	}
@@ -982,14 +969,6 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 		
 		
 		
-		
-		//CMMData cont = node.getChild(1).accept(this, data);
-		
-		//if (!(cont instanceof CMMBoolean)) {
-			//throw new RuntimeException("Invalid (non-boolean) condition in if statement");
-		//}
-		
-		
 		//If child[1] is boolean true visit child[2],Block...return CMMData
 		node.getChild(1).accept(this,output);
 		output.add("ifeq " + ifLabelEnd);
@@ -1000,38 +979,7 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 		
 		output.add(ifLabelEnd + ":");
 		//generate your elseifs (condition equals 0)
-		/**if (node.numChildren()==3) return null; 
-		int i = 3;
 		
-		if (node.getChild(i).getName().equals("elsif")){
-			while(node.getChild(i).getName().equals("elsif")){
-				String elseIfLabel = getLabel();
-				String elseIfEnd = elseIfLabel + "End";
-				node.getChild(i+1).accept(this, output);
-				output.add(" ifeq " + elseIfEnd);
-				output.add(elseIfLabel + " :");
-				node.getChild(i+2).accept(this, output);
-				output.add(" goto " + doneLabel);
-				output.add(elseIfEnd + ":");
-				i+=3;
-			}
-		}
-		
-		
-		
-		//else label
-		output.add(elseLabel + ":");
-		node.getChild(i+1).accept(this,output);
-		output.add(" goto " + doneLabel);
-		
-		
-		
-		
-		//done label:
-		output.add(doneLabel + ":");
-		
-		//done here --end of jasmin script
-		 */
 		return null;
 		
 		
@@ -1063,6 +1011,7 @@ public class CMMJasminVisitor implements CMMVisitor<Integer, List<String>> {
 			
 			
 			output.add("  " + t2a[data.type] + "store " + data.location + "   ; " + data.name);
+			
 		}
 		return null;
 	}

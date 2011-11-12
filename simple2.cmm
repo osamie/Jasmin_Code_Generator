@@ -1,0 +1,24 @@
+
+
+string functionRet() {
+  if(false){
+  	//return 0;
+  }
+	//return 0;
+}
+
+
+
+// do some stupid things
+number main() {
+
+ //number x;
+ //println(functionRet() + 2);
+
+  if(true){
+  	println(functionRet() + "bla");
+  }
+  //return 0;
+	
+}
+

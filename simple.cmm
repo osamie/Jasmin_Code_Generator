@@ -34,46 +34,31 @@ boolean booltester(boolean x, boolean y) {
   println(x|y);
   return x;
 }
+boolean inittest() {
+  boolean x;
+  println(x);  // generates an error - unitialized register
+  //return x;
+}
 
 boolean nottest(boolean v) {
-  println(v);
-  // println(!v);  // generates error - not yet implemented
-  return v;
+  //boolean v;
+  //println(v);
+  //println(!v);  // generates error - not yet implemented
+  //return false;
+  return true;
 }
 
-boolean inittest() {
-  number x;
-  // println(x);  // generates an error - unitialized register
-  return false;
-}
+
+
+
 
 
 
 // do some stupid things
 number main() {
-number i;
-number k;
-i = 1;
-k = 10;
-string w;
-boolean f;
-do{
- if(!!!f){
- println("startttinnng!!");
- }
- i = i + 1;
-}while(i != 16);
-//{
-//w = "previous i is " + i + ".   ";
-//i=i*2;
-//println(concat(w," now  ") + sin(i) + i);
-//}  
-  
-  
-  
-  
-  //string x;
-  //println(concat(x,concat("love","you")));
-  return 0;
+number x;
+println(nottest(true));
+
+  return x;
 }
 
